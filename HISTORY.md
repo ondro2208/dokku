@@ -1,5 +1,116 @@
 # History
 
+## 0.19.13
+
+Install/update via the bootstrap script:
+
+```shell
+wget https://raw.githubusercontent.com/dokku/dokku/v0.19.13/bootstrap.sh
+sudo DOKKU_TAG=v0.19.13 bash bootstrap.sh
+```
+
+### Bug Fixes
+
+- #3828: @josegonzalez Reference correct file in nginx:report command
+
+### Other
+
+- #3824: @dependabot-preview[bot] chore(deps): bump jetty-servlet from 9.4.25.v20191220 to 9.4.26.v20200117 in /tests/apps/java
+
+## 0.19.12
+
+Install/update via the bootstrap script:
+
+```shell
+wget https://raw.githubusercontent.com/dokku/dokku/v0.19.12/bootstrap.sh
+sudo DOKKU_TAG=v0.19.12 bash bootstrap.sh
+```
+
+### New Features
+
+- #3819: @josegonzalez Allow binding nginx to specific IPv4/IPv6 interfaces
+- #3818: @josegonzalez Add support for host-mode networking
+
+### Documentation
+
+- #3814: @treyssatvincent Use dokku:report to for listing domains
+- #3809: @josegonzalez Document nginx:show-conf
+- #3650: @vincelwt Clarify resource management for docker-local scheduler
+- #3806: @kimar Make default vhost example listen to ipv6
+
+### Other
+
+- #3816: @dependabot-preview[bot] chore(deps): bump handlebars from 4.6.0 to 4.7.1 in /tests/apps/.websocket.disabled
+- #3815: @dependabot-preview[bot] chore(deps): bump handlebars from 4.5.3 to 4.6.0 in /tests/apps/.websocket.disabled
+- #3811: @dependabot-preview[bot] chore(deps-dev): bump heroku/heroku-buildpack-php from 165 to 166 in /tests/apps/php
+- #3812: @dependabot-preview[bot] chore(deps): bump jetty-servlet from 9.4.24.v20191120 to 9.4.25.v20191220 in /tests/apps/java
+- #3810: @dependabot-preview[bot] chore(deps): bump monolog/monolog from 1.25.2 to 1.25.3 in /tests/apps/php
+- #3808: @dependabot-preview[bot] chore(deps): [security] bump rack from 1.6.11 to 1.6.12 in /tests/apps/ruby
+- #3807: @dependabot-preview[bot] chore(deps): bump google.golang.org/grpc from 1.25.1 to 1.26.0 in /tests/apps/gogrpc
+- #3804: @dependabot-preview[bot] chore(deps-dev): bump heroku/heroku-buildpack-php from 164 to 165 in /tests/apps/php
+
+## 0.19.11
+
+Install/update via the bootstrap script:
+
+```shell
+wget https://raw.githubusercontent.com/dokku/dokku/v0.19.11/bootstrap.sh
+sudo DOKKU_TAG=v0.19.11 bash bootstrap.sh
+```
+
+### Bug Fixes
+
+- #3800: @josegonzalez Properly track failed check count
+
+### New Features
+
+- #3801: @josegonzalez Update herokuish
+
+### Documentation
+
+- #3798: @znz Fix function descriptions in property-functions file
+
+## 0.19.10
+
+Install/update via the bootstrap script:
+
+```shell
+wget https://raw.githubusercontent.com/dokku/dokku/v0.19.10/bootstrap.sh
+sudo DOKKU_TAG=v0.19.10 bash bootstrap.sh
+```
+
+### Bug Fixes
+
+- #3784: @josegonzalez Ensure checks attempts are tracked per-check instead of globally
+
+### New Features
+
+- #3793: @josegonzalez Omit DWARF symbol table and debug information from go binaries
+- #3792: @josegonzalez Unify property function implementations
+
+### Documentation
+
+- #3712: @fruitl00p Added new plugin
+
+### Other
+
+- #3790: @dependabot-preview[bot] chore(deps): bump gunicorn from 20.0.3 to 20.0.4 in /tests/apps/python-flask
+- #3791: @dependabot-preview[bot] chore(deps): bump gunicorn from 20.0.3 to 20.0.4 in /tests/apps/multi
+- #3787: @dependabot-preview[bot] chore(deps): bump gunicorn from 20.0.2 to 20.0.3 in /tests/apps/multi
+- #3788: @dependabot-preview[bot] chore(deps): bump gunicorn from 20.0.2 to 20.0.3 in /tests/apps/python-flask
+- #3785: @dependabot-preview[bot] chore(deps): bump gunicorn from 20.0.0 to 20.0.2 in /tests/apps/python-flask
+- #3786: @dependabot-preview[bot] chore(deps): bump gunicorn from 20.0.0 to 20.0.2 in /tests/apps/multi
+- #3748: @dependabot-preview[bot] chore(deps): [security] bump express from 2.5.11 to 4.17.1 in /tests/apps/dockerfile-dokku-scale
+- #3749: @dependabot-preview[bot] chore(deps): [security] bump express from 2.5.11 to 4.17.1 in /tests/apps/nodejs-express-noappjson
+- #3747: @dependabot-preview[bot] chore(deps): [security] bump express from 2.5.11 to 4.17.1 in /tests/apps/config
+- #3746: @dependabot-preview[bot] chore(deps): [security] bump express from 2.5.11 to 4.17.1 in /tests/apps/dockerfile-procfile
+- #3741: @dependabot-preview[bot] chore(deps): [security] bump express from 2.5.11 to 4.17.1 in /tests/apps/nodejs-express
+- #3783: @dependabot-preview[bot] chore(deps): bump jetty-servlet from 9.4.23.v20191118 to 9.4.24.v20191120 in /tests/apps/java
+- #3777: @dependabot-preview[bot] chore(deps): [security] bump symfony/http-kernel from 3.4.32 to 3.4.35 in /tests/apps/php
+- #3774: @dependabot-preview[bot] chore(deps): bump gunicorn from 19.9.0 to 20.0.0 in /tests/apps/python-flask
+- #3779: @dependabot-preview[bot] chore(deps): bump monolog/monolog from 1.25.1 to 1.25.2 in /tests/apps/php
+- #3782: @dependabot-preview[bot] chore(deps): bump jetty-servlet from 9.4.22.v20191022 to 9.4.23.v20191118 in /tests/apps/java
+
 ## 0.19.9
 
 Install/update via the bootstrap script:

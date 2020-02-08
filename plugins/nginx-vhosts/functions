@@ -96,13 +96,15 @@ configure_nginx_ports() {
       dokku_log_info1 "no proxy port set. setting to random open high port"
       local PROXY_PORT=$(get_available_port)
     else
-      local PROXY_PORT=80
+      local PROXY_PORT=$(config_get --global DOKKU_PROXY_PORT)
+      PROXY_PORT=${PROXY_PORT:=80}
     fi
     DOKKU_QUIET_OUTPUT=1 config_set --no-restart "$APP" DOKKU_PROXY_PORT="$PROXY_PORT"
   fi
   if [[ -z "$DOKKU_PROXY_SSL_PORT" ]]; then
     if (is_ssl_enabled "$APP"); then
-      local PROXY_SSL_PORT=443
+      local PROXY_SSL_PORT=$(config_get --global DOKKU_PROXY_SSL_PORT)
+      PROXY_SSL_PORT=${PROXY_SSL_PORT:=443}
       if [[ -z "$RAW_TCP_PORTS" ]] && [[ "$IS_APP_VHOST_ENABLED" == "false" ]]; then
         dokku_log_info1 "no proxy ssl port set. setting to random open high port"
         PROXY_SSL_PORT=$(get_available_port)
@@ -315,6 +317,7 @@ nginx_build_config() {
     done
     local PROXY_UPSTREAM_PORTS="$(echo "$PROXY_UPSTREAM_PORTS" | xargs)"
 
+    local SSL_INUSE=
     local NONSSL_VHOSTS=$(get_app_domains "$APP")
     local NOSSL_SERVER_NAME=$(echo "$NONSSL_VHOSTS" | xargs)
     if is_ssl_enabled "$APP"; then
@@ -378,6 +381,10 @@ nginx_build_config() {
         local NGINX_TEMPLATE_SOURCE="app-supplied"
       fi
 
+      local NGINX_BIND_ADDRESS_IP4="$(fn-plugin-property-get-default "nginx" "$APP" "bind-address-ipv4" "")"
+      local NGINX_BIND_ADDRESS_IP6="$(fn-plugin-property-get-default "nginx" "$APP" "bind-address-ipv6" "::")"
+      [[ -z "$NGINX_BIND_ADDRESS_IP6" ]] && NGINX_BIND_ADDRESS_IP6="::"
+
       eval "$(config_export app "$APP")"
       local SIGIL_PARAMS=(-f "$NGINX_TEMPLATE" APP="$APP" DOKKU_ROOT="$DOKKU_ROOT"
         NOSSL_SERVER_NAME="$NOSSL_SERVER_NAME"
@@ -388,6 +395,8 @@ nginx_build_config() {
         TLS13_SUPPORTED="$TLS13_SUPPORTED"
         HTTP2_SUPPORTED="$HTTP2_SUPPORTED"
         NGINX_LOG_ROOT="$NGINX_LOG_ROOT"
+        NGINX_BIND_ADDRESS_IP4="$NGINX_BIND_ADDRESS_IP4"
+        NGINX_BIND_ADDRESS_IP6="$NGINX_BIND_ADDRESS_IP6"
         HTTP2_PUSH_SUPPORTED="$HTTP2_PUSH_SUPPORTED"
         GRPC_SUPPORTED="$GRPC_SUPPORTED"
         DOKKU_APP_LISTEN_PORT="$DOKKU_APP_LISTEN_PORT" DOKKU_APP_LISTEN_IP="$DOKKU_APP_LISTEN_IP"
@@ -403,6 +412,8 @@ nginx_build_config() {
 
       dokku_log_info1 "Creating $SCHEME nginx.conf"
       mv "$NGINX_CONF" "$DOKKU_ROOT/$APP/nginx.conf"
+
+      fn-nginx-vhosts-manage-hsts "$APP" "$SSL_INUSE"
 
       plugn trigger nginx-pre-reload "$APP" "$DOKKU_APP_LISTEN_PORT" "$DOKKU_APP_LISTEN_IP"
 

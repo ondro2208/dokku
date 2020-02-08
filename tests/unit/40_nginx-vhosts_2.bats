@@ -107,6 +107,138 @@ assert_error_log() {
   assert_failure
 }
 
+@test "(nginx-vhosts) nginx:set hsts" {
+  setup_test_tls wildcard
+  local HSTS_CONF="/home/dokku/${TEST_APP}/nginx.conf.d/hsts.conf"
+
+  run deploy_app
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  assert_output_contains "Enabling HSTS"
+
+  run /bin/bash -c "test -f $HSTS_CONF"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "cat $HSTS_CONF | grep includeSubdomains"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "cat $HSTS_CONF | grep 'max-age=15724800'"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "cat $HSTS_CONF | grep preload"
+  echo "output: $output"
+  echo "status: $status"
+  assert_failure
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP hsts-include-subdomains false"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "dokku nginx:build-config $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "cat $HSTS_CONF | grep includeSubdomains"
+  echo "output: $output"
+  echo "status: $status"
+  assert_failure
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP hsts-max-age 120"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "dokku nginx:build-config $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "cat $HSTS_CONF | grep 'max-age=120'"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP hsts-preload true"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "dokku nginx:build-config $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  run /bin/bash -c "cat $HSTS_CONF | grep preload"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP hsts false"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:build-config $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+  assert_output_contains "Enabling HSTS" 0
+
+  run /bin/bash -c "test -f $DOKKU_ROOT/$TEST_APP/nginx.conf.d/hsts.conf"
+  echo "output: $output"
+  echo "status: $status"
+  assert_failure
+}
+
+@test "(nginx-vhosts) nginx:set bind-address" {
+  run deploy_app
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP bind-address-ipv4 127.0.0.1"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP bind-address-ipv6 ::1"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:build-config $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:show-conf $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_output_contains "[::1]:80;"
+  assert_output_contains "127.0.0.1:80;"
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP bind-address-ipv4"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:set $TEST_APP bind-address-ipv6"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:build-config $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_success
+
+  run /bin/bash -c "dokku nginx:show-conf $TEST_APP"
+  echo "output: $output"
+  echo "status: $status"
+  assert_output_contains "[::1]:80;" 0
+  assert_output_contains "127.0.0.1:80;" 0
+}
+
 @test "(nginx-vhosts) nginx:validate" {
   deploy_app
   run /bin/bash -c "dokku nginx:validate"

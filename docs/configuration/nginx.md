@@ -6,8 +6,53 @@ Dokku uses nginx as its server for routing requests to specific applications. By
 nginx:access-logs <app> [-t]             # Show the nginx access logs for an application (-t follows)
 nginx:build-config <app>                 # (Re)builds nginx config for given app
 nginx:error-logs <app> [-t]              # Show the nginx error logs for an application (-t follows)
+nginx:report [<app>] [<flag>]            # Displays a nginx report for one or more apps
+nginx:set <app> <property> (<value>)     # Set or clear an nginx property for an app
+nginx:show-conf <app>                    # Display app nginx config
 nginx:validate [<app>] [--clean]         # Validates and optionally cleans up invalid nginx configurations
 ```
+
+## Binding to specific addresses
+
+> New as of 0.19.2
+
+By default, nginx will listen to all interfaces (`[::]` for IPv6, `0.0.0.0` for IPv4) when proxying requests to applications. This may be changed using the `bind-address-ipv4` and `bind-address-ipv6` properties. This is useful in cases where the proxying should be internal to a network or if there are multiple network interfaces that should respond with different content.
+
+```shell
+dokku nginx:set node-js-app bind-address-ipv4 127.0.0.1
+dokku nginx:set node-js-app bind-address-ipv6 ::1
+```
+
+This may be reverted by setting an empty bind address.
+
+```shell
+dokku nginx:set node-js-app bind-address-ipv4
+dokku nginx:set node-js-app bind-address-ipv6
+```
+
+> Warning: Validation is not performed on either value.
+
+Users with apps that contain a custom `nginx.conf.sigil` file will need to modify the files to respect the new `NGINX_BIND_ADDRESS_IPV4` and `NGINX_BIND_ADDRESS_IPV6` variables.
+
+## HSTS Header
+
+> New as of 0.20.0
+
+If SSL certificates are present, HSTS will be automatically enabled. It can be toggled via `nginx:set`:
+
+```shell
+dokku nginx:set node-js-app hsts true
+dokku nginx:set node-js-app hsts false
+```
+
+The following options are also available via the `nginx:set` command:
+
+- `hsts` (type: boolean, default: `true`): Enables or disables HSTS for your application.
+- `hsts-include-subdomains` (type: boolean, default: `true`): Tells the browser that the HSTS policy also applies to all subdomains of the current domain.
+- `hsts-max-age` (type: integer, default: `15724800`): Time in seconds to cache HSTS configuration.
+- `hsts-preload` (type: boolean, default: `false`): Tells most major web browsers to include the domain in their HSTS preload lists.
+
+Beware that if you enable the header and a subsequent deploy of your application results in an HTTP deploy (for whatever reason), the way the header works means that a browser will not attempt to request the HTTP version of your site if the HTTPS version fails until the max-age is reached.
 
 ## Checking access logs
 
@@ -43,6 +88,14 @@ In certain cases, your app nginx configs may drift from the correct config for y
 
 ```shell
 dokku nginx:build-config node-js-app
+```
+
+## Showing the nginx config
+
+For debugging purposes, it may be useful to show the nginx config. This can be achieved via the `nginx:show-conf` command.
+
+```shell
+dokku nginx:show-conf node-js-app
 ```
 
 ## Validating nginx configs
@@ -165,10 +218,6 @@ See the [default site documentation](/docs/configuration/domains.md#default-site
 ## Running behind a load balancer
 
 See the [load balancer documentation](/docs/configuration/ssl.md#running-behind-a-load-balancer).
-
-## HSTS Header
-
-See the [HSTS documentation](/docs/configuration/ssl.md#hsts-header).
 
 ## SSL Configuration
 
