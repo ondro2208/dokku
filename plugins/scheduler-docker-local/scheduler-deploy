@@ -74,7 +74,7 @@ scheduler-docker-local-scheduler-deploy() {
       local DOCKER_ARGS
       DOCKER_ARGS=$(: | plugn trigger docker-args-deploy "$APP" "$IMAGE_TAG" "$PROC_TYPE" "$CONTAINER_INDEX")
       DOCKER_ARGS+=" -e DYNO=$PROC_TYPE.$CONTAINER_INDEX "
-      DOCKER_ARGS+=$(: | plugn trigger docker-args-process-deploy "$APP" "$IMAGE_SOURCE_TYPE" "$IMAGE_TAG" "$PROC_TYPE" "$CONTAINER_INDEX")
+      DOCKER_ARGS+=$(: | plugn trigger docker-args-process-deploy "$APP" "$IMAGE_TAG" "$IMAGE_SOURCE_TYPE" "$PROC_TYPE" "$CONTAINER_INDEX")
       [[ "$DOKKU_TRACE" ]] && DOCKER_ARGS+=" -e TRACE=true "
 
       declare -a ARG_ARRAY
@@ -98,16 +98,16 @@ scheduler-docker-local-scheduler-deploy() {
         START_CMD=$(fn-scheduler-docker-local-extract-start-cmd "$APP" "$PROC_TYPE" "$START_CMD" "$DOKKU_HEROKUISH" "$DOKKU_PORT")
         if [[ "$DOKKU_NETWORK_BIND_ALL" == "false" ]]; then
           # shellcheck disable=SC2086
-          cid=$("$DOCKER_BIN" container run --label=com.dokku.container-type=deploy "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS --init --detach --env PORT=$DOKKU_PORT "${ARG_ARRAY[@]}" $IMAGE $START_CMD)
+          cid=$("$DOCKER_BIN" container run --label=com.dokku.container-type=deploy "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS --detach --env PORT=$DOKKU_PORT "${ARG_ARRAY[@]}" $IMAGE $START_CMD)
         else
           # shellcheck disable=SC2086
-          cid=$("$DOCKER_BIN" container run --label=com.dokku.container-type=deploy "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS --init --detach $DOKKU_DOCKER_PORT_ARGS --env PORT=$DOKKU_PORT "${ARG_ARRAY[@]}" $IMAGE $START_CMD)
+          cid=$("$DOCKER_BIN" container run --label=com.dokku.container-type=deploy "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS --detach $DOKKU_DOCKER_PORT_ARGS --env PORT=$DOKKU_PORT "${ARG_ARRAY[@]}" $IMAGE $START_CMD)
         fi
       else
         START_CMD=$(fn-scheduler-docker-local-extract-start-cmd "$APP" "$PROC_TYPE" "$START_CMD" "$DOKKU_HEROKUISH")
 
         # shellcheck disable=SC2086
-        cid=$("$DOCKER_BIN" container run --label=com.dokku.container-type=deploy "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS --init --detach "${ARG_ARRAY[@]}" $IMAGE $START_CMD)
+        cid=$("$DOCKER_BIN" container run --label=com.dokku.container-type=deploy "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS --detach "${ARG_ARRAY[@]}" $IMAGE $START_CMD)
       fi
 
       ipaddr=$(plugn trigger network-get-ipaddr "$APP" "$PROC_TYPE" "$cid")
@@ -130,7 +130,7 @@ scheduler-docker-local-scheduler-deploy() {
       # run checks first, then post-deploy hooks, which switches proxy traffic
       trap 'kill_new $cid $PROC_TYPE $CONTAINER_INDEX' INT TERM EXIT
       if [[ "$(is_app_proctype_checks_disabled "$APP" "$PROC_TYPE")" == "false" ]]; then
-        dokku_log_info1 "Attempting pre-flight checks ($PROC_TYPE.$CONTAINER_INDEX)"
+        dokku_log_info1 "Attempting pre-flight checks"
         plugn trigger check-deploy "$APP" "$cid" "$PROC_TYPE" "$port" "$ipaddr"
       fi
       trap - INT TERM EXIT

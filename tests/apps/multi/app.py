@@ -1,9 +1,6 @@
 import os
 from flask import Flask, render_template
-try:
-    from werkzeug.wsgi import SharedDataMiddleware
-except ImportError:
-    from werkzeug.middleware.shared_data import SharedDataMiddleware
+from werkzeug.wsgi import SharedDataMiddleware
 
 app = Flask(__name__)
 
