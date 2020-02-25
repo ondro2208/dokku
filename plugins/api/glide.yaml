@@ -1,0 +1,7 @@
+package: .
+import:
+- package: github.com/codeskyblue/go-sh
+- package: github.com/ryanuber/columnize
+- package: github.com/gorilla/mux
+- package: go.mongodb.org/mongo-driver
+  version: ^1.3.0

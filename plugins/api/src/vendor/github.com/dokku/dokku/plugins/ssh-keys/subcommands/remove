@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+source "$PLUGIN_AVAILABLE_PATH/ssh-keys/functions"
+
+cmd-ssh-keys-remove() {
+  declare desc="Removes key from authorized_keys"
+  declare cmd="ssh-keys:remove"
+  [[ "$1" == "$cmd" ]] && shift 1
+  declare NAME="$1"
+
+  verify_ssh_key_file
+  [[ -z "$NAME" ]] && dokku_log_fail "A name is required to remove a key, ie: dokku ssh-keys:remove <name>"
+  sshcommand acl-remove dokku "$NAME" || dokku_log_fail "sshcommand returned an error $?"
+}
+
+cmd-ssh-keys-remove "$@"

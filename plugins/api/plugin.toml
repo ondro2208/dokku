@@ -1,0 +1,4 @@
+[plugin]
+description = "dokku api plugin"
+version = "0.19.13"
+[plugin.config]
