@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/dokku/dokku/plugins/api"
 	"os"
 	"strconv"
 )
@@ -14,8 +15,7 @@ func main() {
 	cmd := flag.Arg(0)
 	switch cmd {
 	case "api":
-		fmt.Println("api started")
-		ApiRoute()
+		api.ApiRoute()
 	default:
 		dokkuNotImplementExitCode, err := strconv.Atoi(os.Getenv("DOKKU_NOT_IMPLEMENTED_EXIT"))
 		if err != nil {
