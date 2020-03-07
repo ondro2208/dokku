@@ -20,6 +20,11 @@ func ApiRoute() {
 	router.HandleFunc("/register", controllers.RegisterUserEndpoint).Methods("POST")
 	router.HandleFunc("/login", controllers.LoginUserEndpoint).Methods("POST")
 	router.HandleFunc("/apps", AppsEndpoint).Methods("POST")
+	router.HandleFunc("/users", controllers.GetUsersEndpoint).Methods("GET")
+	router.HandleFunc("/users/{id}", controllers.UsersEndpoint).Methods("PUT")
+	router.HandleFunc("/users/sshKeys", controllers.GetSshKeys).Methods("GET")
+	router.HandleFunc("/users/{id}/sshKeys", controllers.PutSshKeys).Methods("PUT")
+	router.HandleFunc("/users/{id}/sshKeys", controllers.DeleteSshKeys).Methods("DELETE")
 	http.ListenAndServe(":3000", router)
 }
 

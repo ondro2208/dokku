@@ -8,7 +8,7 @@ import (
 
 const GITHUB_API = "https://api.github.com"
 
-type gitHubUser struct {
+type GitHubUser struct {
 	Login         string `json:"login,omitempty"`
 	ID            int64  `json:"id,omitempty"`
 	RepositoryURL string `json:"html_url,omitempty"`
@@ -19,13 +19,12 @@ type gitHubUserBadCredentials struct {
 	DocumentationURL string `json:"documentation_url,omitempty"`
 }
 
-func GetGithubUser(authToken string) (*gitHubUser, *gitHubUserBadCredentials) {
+func GetGithubUser(authToken string) (*GitHubUser, *gitHubUserBadCredentials) {
 	request, err1 := http.NewRequest("GET", GITHUB_API+"/user", nil)
 	request.Header.Add("Authorization", "Bearer "+authToken)
 	if err1 != nil {
 		log.Fatalln(err1)
 	}
-	log.Println("Request creating successfull")
 
 	response, err2 := httpClient.Do(request)
 	if err2 != nil {
@@ -40,16 +39,10 @@ func GetGithubUser(authToken string) (*gitHubUser, *gitHubUserBadCredentials) {
 		return nil, badCredentials
 	}
 
-	log.Println("Executing request successfull")
-
-	var githubUser *gitHubUser
+	var githubUser *GitHubUser
 	err3 := json.NewDecoder(response.Body).Decode(&githubUser)
 	if err3 != nil {
 		log.Fatalln(err3)
 	}
-
-	log.Println(githubUser.Login)
-	log.Println(githubUser.ID)
-	log.Println(githubUser.RepositoryURL)
 	return githubUser, nil
 }

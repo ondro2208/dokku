@@ -5,19 +5,12 @@ import (
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 	"net/http"
 	"time"
 )
 
 var Client *mongo.Client
 var httpClient = &http.Client{}
-
-type User struct {
-	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ServiceID int64              `json:"serviceId,omitempty" bson:"serviceId,omitempty"`
-	UserName  string             `json:"userName,omitempty" bson:"userName,omitempty"`
-}
 
 type RegisterUser struct {
 	AuthToken string `json:"auth_token,omitempty"`
@@ -31,7 +24,6 @@ func RegisterUserEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var registerBody RegisterUser
 	_ = json.NewDecoder(request.Body).Decode(&registerBody)
-	log.Println(registerBody)
 
 	var user User
 	githubUser, badCredentials := GetGithubUser(registerBody.AuthToken)
@@ -58,7 +50,6 @@ func LoginUserEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var loginUser LoginUser
 	_ = json.NewDecoder(request.Body).Decode(&loginUser)
-	log.Println(loginUser)
 
 	var user User
 	githubUser, badCredentials := GetGithubUser(loginUser.AuthToken)
