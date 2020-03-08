@@ -143,6 +143,7 @@ func DeleteSshKeys(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(isAdded)
 
 	jsonData, err := json.Marshal(map[string]string{"message": "SSH key deleted succesfully"})
 	if err != nil {
@@ -169,6 +170,7 @@ func PutSshKeys(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(isAdded)
 
 	jsonData, err := json.Marshal(map[string]string{"message": "SSH key added succesfully"})
 	if err != nil {
