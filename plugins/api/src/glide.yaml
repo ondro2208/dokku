@@ -3,4 +3,3 @@ import:
 - package: github.com/ryanuber/columnize
 - package: go.mongodb.org/mongo-driver
   version: ^1.3.0
-- package: github.com/dokku/dokku/plugins/api
